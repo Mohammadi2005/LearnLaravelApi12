@@ -3,6 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 class BlogRequest extends FormRequest
 {
@@ -22,16 +25,44 @@ class BlogRequest extends FormRequest
 
     public function rules(): array
     {
-        $rules = [
-            'title' => 'required|string|max:255',
-            'body' => 'required|string',
-        ];
+        if($this->isMethod('POST')) {
+            $rules = [
+                'title' => 'required|string|max:255',
+                'slug' => 'required|string|unique:blogs,slug',
+                'body' => 'required|string',
+            ];
+        }
+
 
         if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
             $blog = $this->route('blog');
-            $rules['slug'] = 'required|string|max:255|unique:blogs,slug,' . $blog->id;
-        } else {
-            $rules['slug'] = 'required|string|max:255|unique:blogs,slug';
+
+            if (!$blog || !($blog instanceof \App\Models\Blog)) {
+                return [];
+            }
+
+            $rules = [];
+
+            // فقط فیلدهایی که در request وجود دارند رو اعتبارسنجی کن
+            if ($this->has('title')) {
+                $rules['title'] = 'sometimes|required|string|max:255';
+            }
+
+            if ($this->has('slug')) {
+                $rules['slug'] = [
+                    'sometimes',
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('blogs', 'slug')->ignore($blog->id)
+                ];
+            }
+
+            if ($this->has('body')) {
+                $rules['body'] = 'sometimes|required|string';
+            }
+
+            return $rules;
         }
 
         return $rules;
@@ -46,7 +77,17 @@ class BlogRequest extends FormRequest
             'body.required' => 'متن مطلب الزامی است',
         ];
     }
-
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'success' => false,
+                'message' => 'خطا در اعتبارسنجی داده‌ها',
+                'errors' => $validator->errors(),
+                'status' => 422
+            ], 422)
+        );
+    }
 }
 
 

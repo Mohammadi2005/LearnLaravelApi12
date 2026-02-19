@@ -28,8 +28,8 @@ Route::post('/user', function (Request $request) {
 
 Route::prefix('blog')->name('blog')->group(function () {
     Route::get('/', [BlogController::class, 'index']);
-    Route::get('/{slug}', [BlogController::class, 'show']);
     Route::post('/', [BlogController::class, 'store'])->name('.store');
-    Route::delete('/{id}', [BlogController::class, 'destroy'])->name('.destroy');
-    Route::put('/{id}', [BlogController::class, 'update'])->name('.update');
+    Route::delete('/{blog:slug}', [BlogController::class, 'destroy'])->name('.destroy');
+    Route::match(['PUT', 'PATCH'], '/{blog}', [BlogController::class, 'update'])->name('update');
+    Route::get('/{slug}', [BlogController::class, 'show'])->name('.show');
 });

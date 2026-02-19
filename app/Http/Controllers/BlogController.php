@@ -64,4 +64,24 @@ class BlogController extends Controller
 
         }
     }
+    public function update(BlogRequest $request, Blog $blog){
+        try {
+            $blog->update($request->validated());
+            Log::info('Blog updated successfully', [
+                'blog_id' => $blog->id,
+                'slug' => $blog->slug
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'blog updated successfully',
+                'data' => new BlogResource($blog),
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'blog update not found',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
+    }
 }

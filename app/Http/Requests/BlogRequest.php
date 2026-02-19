@@ -27,9 +27,10 @@ class BlogRequest extends FormRequest
     {
         if($this->isMethod('POST')) {
             $rules = [
-                'title' => 'required|string|max:255',
+                'title' => 'required|string|min:5|max:255',
                 'slug' => 'required|string|unique:blogs,slug',
                 'body' => 'required|string',
+                'image' => 'sometimes|required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ];
         }
 
@@ -62,6 +63,10 @@ class BlogRequest extends FormRequest
                 $rules['body'] = 'sometimes|required|string';
             }
 
+            if ($this->has('image')) {
+                $rules['image'] = 'sometimes|required|image|mimes:jpeg,png,jpg,gif,svg|max:2048';
+            }
+
             return $rules;
         }
 
@@ -72,11 +77,27 @@ class BlogRequest extends FormRequest
         return [
             'title.required' => 'عنوان مطلب الزامی است',
             'title.max' => 'عنوان نباید بیشتر از ۲۵۵ کاراکتر باشد',
+            'title.min' => "عنوان نباید کمتر از 5 کاراکتر باشد",
             'slug.required' => 'نامک (slug) الزامی است',
             'slug.unique' => 'این نامک قبلاً استفاده شده است',
             'body.required' => 'متن مطلب الزامی است',
+            'image.required' => "انتخاب عکس الزامی است",
+            'image.mimes' => 'jpeg,png,jpg,gif,svg باشد فرمت فایل باید'
         ];
     }
+        //فارسی سازس کردن
+        //
+        //php artisan lang:publish
+        //دستور بالا رو میزنم ی یک پوشه lang یاد که یک فایل
+        //validation داره اونو میدم به چت تا ترجمه کنه و وعد توی همون پوسه پوشه en رو کپی میکنم با نام fa ذخیره میکنم و و ترجمه شده رو
+        //میدم به validation عد توی فایل env
+        //#APP_LOCALE=en
+        //APP_LOCALE=fa
+        //می کنم و بعد پیام ها رو فارسی میده
+
+//    ========================
+
+//4:52  رضا کوهساری
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(

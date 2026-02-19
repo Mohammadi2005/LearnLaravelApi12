@@ -7,6 +7,7 @@ use App\Models\Blog;
 use App\Http\Requests\BlogRequest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
@@ -45,8 +46,19 @@ class BlogController extends Controller
 
     public function store(BlogRequest $request){
         try {
+            $validated = $request->validated();
+            $file = $request->file('image');
 
-            $blog = Blog::create($request->validated());
+            $originalName = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+
+            $uniqName = $originalName . '-' . time() . '-' . Str::random(8) . '.' . $extension;
+
+            $file->storeAs('blogsImage', $uniqName, 'public');
+
+            $validated['image'] = $uniqName;
+
+            $blog = Blog::create($validated);
 
             return response()->json([
                 'success' => true,

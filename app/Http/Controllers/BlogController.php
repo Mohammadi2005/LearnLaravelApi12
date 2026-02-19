@@ -26,5 +26,20 @@ class BlogController extends Controller
             ], 500);
         }
     }
-
+    public function show($slug){
+        try {
+            $blog = Blog::where('slug', $slug)->firstOrFail();
+            return response()->json([
+                'success' => true,
+                'message' => 'blog show successfully',
+                'data' => $blog,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'blog show not found',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
+    }
 }

@@ -42,4 +42,26 @@ class BlogController extends Controller
             ], 500);
         }
     }
+
+    public function store(BlogRequest $request){
+        try {
+
+            $blog = Blog::create($request->validated());
+
+            return response()->json([
+                'success' => true,
+                'message' => 'blog created successfully',
+                'data' => $blog,
+            ], 201);
+
+        } catch (\Exception $e) {
+
+            return response()->json([
+                'success' => false,
+                'message' => 'خطا در ایجاد بلاگ',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+
+        }
+    }
 }

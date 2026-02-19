@@ -84,4 +84,20 @@ class BlogController extends Controller
             ], 500);
         }
     }
+    public function destroy(Blog $blog){
+        try {
+            $blog->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'blog deleted successfully',
+                'data' => $blog,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'blog deleted not found',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
+    }
 }

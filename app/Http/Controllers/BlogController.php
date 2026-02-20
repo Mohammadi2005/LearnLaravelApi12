@@ -49,15 +49,8 @@ class BlogController extends Controller
 
     public function store(BlogRequest $request){
         try {
-            if (!Auth::check()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'کاربر لاگین نیست'
-                ], 401);
-            }
             $validated = $request->validated();
-            $validated['user_id'] = Auth::id();
-
+            $validated['user_id'] = Auth::guard('sanctum')->id();
             $file = $request->file('image');
 
             $originalName = $file->getClientOriginalName();

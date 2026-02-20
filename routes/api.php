@@ -7,6 +7,8 @@ use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Log;
+use App\Http\Middleware\LoginCheck;
+use App\Http\Middleware\GuestCheck;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -29,7 +31,7 @@ Route::post('/user', function (Request $request) {
     ]);
 });
 
-Route::middleware("auth:sanctum")->prefix('blog')->name('blog')->group(function () {
+Route::middleware([LoginCheck::class])->prefix('blog')->name('blog')->group(function () {
     Route::get('/', [BlogController::class, 'index']);
     Route::post('/', [BlogController::class, 'store'])->name('.store');
     Route::delete('/{blog:slug}', [BlogController::class, 'destroy'])->name('.destroy');
@@ -37,12 +39,14 @@ Route::middleware("auth:sanctum")->prefix('blog')->name('blog')->group(function 
     Route::get('/{slug}', [BlogController::class, 'show'])->name('.show');
 });
 
-Route::post('/auth/register', [RegisterController::class, 'register'])->name('register');
-Route::post('/auth/login', [LoginController::class, 'login'])->name('login');
+Route::middleware([GuestCheck::class])->prefix('auth')->name('auth')->group(function () {
+    Route::post('/register', [RegisterController::class, 'register'])->name('.register');
+    Route::post('/login', [LoginController::class, 'login'])->name('.login');
+});
 
-Route::middleware("auth:sanctum")->prefix('user')->name('user')->group(function () {
+Route::middleware([LoginCheck::class])->prefix('user')->name('user')->group(function () {
     Route::get('/', [UserController::class, 'index']);
-//    Route::delete('/{id}', [UserController::class, 'destroy'])->name('.destroy');
-//    Route::match(['PUT', 'PATCH'], '/{id}', [UserController::class, 'update'])->name('update');
     Route::get('/{id}', [UserController::class, 'show'])->name('.show');
 });
+
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware([LoginCheck::class]);

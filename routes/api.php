@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BlogController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -37,5 +38,5 @@ Route::prefix('blog')->name('blog')->group(function () {
 
 Route::prefix('auth')->name('auth')->group(function () {
     Route::post('/register', [RegisterController::class, 'register'])->name('.register');
-    Route::post('/login', [RegisterController::class, 'login'])->name('.login');
+    Route::post('/login', [LoginController::class, 'login'])->name('.login');
 });

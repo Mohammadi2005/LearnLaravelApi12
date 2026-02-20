@@ -14,5 +14,10 @@ class Blog extends Model
         'slug',
         'body',
         'image',
+        'user_id',
     ];
+    public function user() {
+        return $this->blongsTo(User::class);
+    }
+
 }

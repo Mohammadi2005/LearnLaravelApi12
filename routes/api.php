@@ -28,7 +28,7 @@ Route::post('/user', function (Request $request) {
     ]);
 });
 
-Route::prefix('blog')->name('blog')->group(function () {
+Route::middleware("auth:sanctum")->prefix('blog')->name('blog')->group(function () {
     Route::get('/', [BlogController::class, 'index']);
     Route::post('/', [BlogController::class, 'store'])->name('.store');
     Route::delete('/{blog:slug}', [BlogController::class, 'destroy'])->name('.destroy');
@@ -36,7 +36,11 @@ Route::prefix('blog')->name('blog')->group(function () {
     Route::get('/{slug}', [BlogController::class, 'show'])->name('.show');
 });
 
-Route::prefix('auth')->name('auth')->group(function () {
-    Route::post('/register', [RegisterController::class, 'register'])->name('.register');
-    Route::post('/login', [LoginController::class, 'login'])->name('.login');
-});
+//Route::group(function () {
+//    Route::post('/register', [RegisterController::class, 'register'])->name('.register');
+//    Route::post('/login', [LoginController::class, 'login'])->name('.login');
+//});
+
+Route::post('/auth/register', [RegisterController::class, 'register'])->name('register');
+Route::post('/auth/login', [LoginController::class, 'login'])->name('login');
+

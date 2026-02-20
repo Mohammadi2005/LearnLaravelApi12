@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Resources\BlogResource;
 use App\Models\Blog;
 use App\Http\Requests\BlogRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
+
+
     public function index(){
         try {
             $blog = Blog::all();
@@ -46,7 +49,15 @@ class BlogController extends Controller
 
     public function store(BlogRequest $request){
         try {
+            if (!Auth::check()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'کاربر لاگین نیست'
+                ], 401);
+            }
             $validated = $request->validated();
+            $validated['user_id'] = Auth::id();
+
             $file = $request->file('image');
 
             $originalName = $file->getClientOriginalName();

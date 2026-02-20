@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\BlogController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,4 +33,9 @@ Route::prefix('blog')->name('blog')->group(function () {
     Route::delete('/{blog:slug}', [BlogController::class, 'destroy'])->name('.destroy');
     Route::match(['PUT', 'PATCH'], '/{blog}', [BlogController::class, 'update'])->name('update');
     Route::get('/{slug}', [BlogController::class, 'show'])->name('.show');
+});
+
+Route::prefix('auth')->name('auth')->group(function () {
+    Route::post('/register', [RegisterController::class, 'register'])->name('.register');
+    Route::post('/login', [RegisterController::class, 'login'])->name('.login');
 });

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Log;
@@ -36,11 +37,12 @@ Route::middleware("auth:sanctum")->prefix('blog')->name('blog')->group(function 
     Route::get('/{slug}', [BlogController::class, 'show'])->name('.show');
 });
 
-//Route::group(function () {
-//    Route::post('/register', [RegisterController::class, 'register'])->name('.register');
-//    Route::post('/login', [LoginController::class, 'login'])->name('.login');
-//});
-
 Route::post('/auth/register', [RegisterController::class, 'register'])->name('register');
 Route::post('/auth/login', [LoginController::class, 'login'])->name('login');
 
+Route::middleware("auth:sanctum")->prefix('user')->name('user')->group(function () {
+    Route::get('/', [UserController::class, 'index']);
+//    Route::delete('/{id}', [UserController::class, 'destroy'])->name('.destroy');
+//    Route::match(['PUT', 'PATCH'], '/{id}', [UserController::class, 'update'])->name('update');
+    Route::get('/{id}', [UserController::class, 'show'])->name('.show');
+});

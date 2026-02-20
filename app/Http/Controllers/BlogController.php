@@ -16,7 +16,7 @@ class BlogController extends Controller
 
     public function index(){
         try {
-            $blog = Blog::all();
+            $blog = Blog::with('user')->get();
             return response()->json([
                 'success' => true,
                 'message' => 'blog list successfully',
@@ -32,7 +32,7 @@ class BlogController extends Controller
     }
     public function show($slug){
         try {
-            $blog = Blog::where('slug', $slug)->firstOrFail();
+            $blog = Blog::where('slug', $slug)->with('user')->firstOrFail();
             return response()->json([
                 'success' => true,
                 'message' => 'blog show successfully',

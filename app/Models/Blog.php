@@ -17,7 +17,7 @@ class Blog extends Model
         'user_id',
     ];
     public function user() {
-        return $this->blongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
 
 }

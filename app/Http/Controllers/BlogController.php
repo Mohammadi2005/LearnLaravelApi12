@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Resources\BlogResource;
 use App\Models\Blog;
 use App\Http\Requests\BlogRequest;
+use App\Policies\BlogPolicy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Gate;
+use App\Http\Controllers\Controller;
 
 class BlogController extends Controller
 {
@@ -82,6 +85,14 @@ class BlogController extends Controller
     }
     public function update(BlogRequest $request, Blog $blog){
         try {
+            $user = Auth::guard('sanctum')->user();
+            if (Gate::forUser($user)->denies('update', $blog)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'شما اجازه ویرایش این بلاگ را ندارید'
+                ], 403);
+            }
+
             $blog->update($request->validated());
             Log::info('Blog updated successfully', [
                 'blog_id' => $blog->id,
@@ -102,6 +113,13 @@ class BlogController extends Controller
     }
     public function destroy(Blog $blog){
         try {
+            $user = Auth::guard('sanctum')->user();
+            if (Gate::forUser($user)->denies('update', $blog)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'شما اجازه حذف این بلاگ را ندارید'
+                ], 403);
+            }
             $blog->delete();
             return response()->json([
                 'success' => true,
@@ -116,4 +134,5 @@ class BlogController extends Controller
             ], 500);
         }
     }
+
 }
